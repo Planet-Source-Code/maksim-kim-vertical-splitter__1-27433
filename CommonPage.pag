@@ -1,0 +1,133 @@
+VERSION 5.00
+Begin VB.PropertyPage CommonPage 
+   Caption         =   "Common"
+   ClientHeight    =   3315
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   5190
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   3315
+   ScaleWidth      =   5190
+   Begin VB.TextBox txtRight 
+      Height          =   315
+      Left            =   2820
+      TabIndex        =   4
+      Top             =   960
+      Width           =   2115
+   End
+   Begin VB.TextBox txtLeft 
+      Height          =   315
+      Left            =   2820
+      TabIndex        =   3
+      Top             =   540
+      Width           =   2115
+   End
+   Begin VB.CommandButton cmdToRight 
+      Caption         =   ">"
+      Height          =   315
+      Left            =   2220
+      TabIndex        =   2
+      Top             =   960
+      Width           =   435
+   End
+   Begin VB.CommandButton cmdToLeft 
+      Caption         =   ">"
+      Height          =   315
+      Left            =   2220
+      TabIndex        =   1
+      Top             =   540
+      Width           =   435
+   End
+   Begin VB.ListBox lstAvailable 
+      Height          =   2595
+      ItemData        =   "CommonPage.pgx":0000
+      Left            =   240
+      List            =   "CommonPage.pgx":0002
+      TabIndex        =   0
+      Top             =   540
+      Width           =   1815
+   End
+   Begin VB.Label Label2 
+      AutoSize        =   -1  'True
+      Caption         =   "Available controls"
+      Height          =   195
+      Left            =   480
+      TabIndex        =   6
+      Top             =   240
+      Width           =   1245
+   End
+   Begin VB.Label Label1 
+      AutoSize        =   -1  'True
+      Caption         =   "Controls to split"
+      Height          =   195
+      Left            =   3240
+      TabIndex        =   5
+      Top             =   240
+      Width           =   1065
+   End
+End
+Attribute VB_Name = "CommonPage"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Sub cmdToLeft_Click()
+    On Error Resume Next
+    If lstAvailable.ListIndex < 0 Or lstAvailable.ListIndex > lstAvailable.ListCount Then
+        Exit Sub
+    End If
+    If lstAvailable.List(lstAvailable.ListIndex) <> txtRight Then
+        txtLeft = lstAvailable.List(lstAvailable.ListIndex)
+        Changed = True
+    End If
+    
+End Sub
+
+Private Sub cmdToRight_Click()
+    On Error Resume Next
+    If lstAvailable.ListIndex < 0 Or lstAvailable.ListIndex > lstAvailable.ListCount Then
+        Exit Sub
+    End If
+    If lstAvailable.List(lstAvailable.ListIndex) <> txtLeft Then
+        txtRight = lstAvailable.List(lstAvailable.ListIndex)
+        Changed = True
+    End If
+End Sub
+
+
+Private Sub PropertyPage_ApplyChanges()
+    SelectedControls(0).ControlName1 = txtLeft
+    SelectedControls(0).ControlName2 = txtRight
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+'    Changed = True
+    Dim UC As MSplitter     'Make sure that UC is typed explicitly as
+                            'the user-defined control you are working
+                            'with. To use Friend functions, you must
+                            'early-bind your variables.
+    lstAvailable.Clear
+    
+    Dim ctrl As Object
+    Set UC = SelectedControls(0)  'Return selected control.
+    For Each ctrl In UC.FormControls  'Iterate through the use of
+                                      'UC's friend function.
+        If ctrl.Name <> UC.Name And _
+            ctrl.Name <> UC.mahParent.Name Then
+            lstAvailable.AddItem ctrl.Name  'Output the name of each control.
+        End If
+    Next ctrl
+    
+    txtLeft = SelectedControls(0).ControlName1
+    txtRight = SelectedControls(0).ControlName2
+End Sub
+
+Private Sub txtLeft_Change()
+    Changed = True
+End Sub
+
+Private Sub txtRight_Change()
+    Changed = True
+End Sub
